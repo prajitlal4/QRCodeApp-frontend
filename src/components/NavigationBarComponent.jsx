@@ -1,6 +1,9 @@
 import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { signOut } from 'firebase/auth'
+import { auth } from '../firebaseConfig'
+import { useNavigate } from 'react-router-dom'
 
 const user = {
   name: 'Tom Cook',
@@ -13,10 +16,10 @@ const navigation = [
   { name: 'Current Applications', href: '#', current: false },
   { name: 'Business Profile', href: '#', current: false },
 ]
+
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
   { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
 ]
 
 function classNames(...classes) {
@@ -24,6 +27,16 @@ function classNames(...classes) {
 }
 
 export default function NavigationBarComponent() {
+
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate("/sign-in");
+  }
+
   return (
     <div>
       <Disclosure as="nav" className="border-b border-gray-200 bg-white">
@@ -60,6 +73,7 @@ export default function NavigationBarComponent() {
                           {item.name}
                         </a>
                       ))}
+
                     </div>
                   </div>
                   <div className="hidden sm:ml-6 sm:flex sm:items-center">
@@ -106,6 +120,9 @@ export default function NavigationBarComponent() {
                               )}
                             </Menu.Item>
                           ))}
+                          <Menu.Item>
+                            <button className='block px-4 py-2 text-sm text-gray-700' onClick={handleLogout}>Logout</button>
+                          </Menu.Item>
                         </Menu.Items>
                       </Transition>
                     </Menu>
@@ -173,6 +190,9 @@ export default function NavigationBarComponent() {
                         {item.name}
                       </Disclosure.Button>
                     ))}
+                    <Disclosure.Button className="block px-4 py-2 text-base font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-800" onClick={handleLogout}>
+                      Logout
+                    </Disclosure.Button>
                   </div>
                 </div>
               </Disclosure.Panel>
