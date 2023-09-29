@@ -13,8 +13,8 @@ const user = {
 }
 const navigation = [
   { name: 'Dashboard', href: '#', current: true },
-  { name: 'Current Applications', href: '#', current: false },
-  { name: 'Business Profile', href: '#', current: false },
+  // { name: 'Current Applications', href: '#', current: false },
+  // { name: 'Business Profile', href: '#', current: false },
 ]
 
 const userNavigation = [

@@ -5,7 +5,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, setDoc } from "firebase/firestore"; 
 
-export default function SignUpComponent() {
+export default function SignUpComponent() { //This is the signup component for a candidate
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,16 +20,19 @@ export default function SignUpComponent() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password); //Sends data to firebase
       const user = userCredential.user; //retrieves user object returned from firebase
 
-      const docRef = doc(db, "users", user.uid) //create a document reference for adding user in users collection
+      const docRef = doc(db, "users", user.uid); //create a document reference for adding user in users collection
 
-      const permissionDocRef = doc(db, "permissions", "1");
+      const permDocRef = doc(db, "permissions", user.uid); //create a document for permissions
 
       await setDoc(docRef, {
         firstName: fname.valueOf(),
         lastName: lname.valueOf(),
-        email: email.valueOf(),
-        permissionLevel: permissionDocRef,
-      })
+        email: email.valueOf()
+      });
+
+      await setDoc(permDocRef, {
+        type: "candidate"
+      });
 
       /* Storing neccessary values into localStorage to identify who the user is */ 
       localStorage.setItem('token', user.accessToken);

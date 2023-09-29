@@ -7,18 +7,6 @@ import { doc, getDoc } from "firebase/firestore";
 
 export default function SignInComponent() {
 
-  // const permConverter = {
-  //   toFirestore: (user) => {
-  //     return {
-  //       permission: user.permissionLevel
-  //     };
-  //   },
-  //   fromFirestore: (snapshot, options) => {
-  //     const data = snapshot.data(options);
-  //     return toString(data.permissionLevel);
-  //   }
-  // }
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -31,19 +19,21 @@ export default function SignInComponent() {
       const user = userCredential.user;
 
       const docRef = doc(db, "users", user.uid)
+      const permDocRef = doc(db, "permissions", user.uid)
 
       const docSnap = await getDoc(docRef)
+      const permDocSnap = await getDoc(permDocRef)
 
-      if (docSnap.exists()) {
+      if (docSnap.exists() && permDocSnap.exists()) {
         localStorage.setItem('token', user.accessToken);
         localStorage.setItem('user', JSON.stringify(user));
 
-        const permissionLevel = docSnap.get("permissionLevel")
+        const permissionLevel = permDocSnap.get("type")
         console.log(docSnap)
 
-        if (permissionLevel === 1) {
+        if (permissionLevel === "candidate") {
           navigate("/dashboard")
-        } else if (permissionLevel === 2) {
+        } else if (permissionLevel === "business") {
           navigate("/business-dashboard")
         }
         
@@ -151,7 +141,7 @@ export default function SignInComponent() {
               </div>
             </form>
 
-            <div>
+            {/* <div>
               <div className="relative mt-10">
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                   <div className="w-full border-t border-gray-200" />
@@ -186,7 +176,7 @@ export default function SignInComponent() {
                   <span className="text-sm font-semibold leading-6">GitHub</span>
                 </a>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <p className="mt-10 text-center text-sm text-gray-500">

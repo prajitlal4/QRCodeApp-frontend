@@ -5,7 +5,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, setDoc } from "firebase/firestore"; 
 
-export default function BusinessSignUpComponent() {
+export default function BusinessSignUpComponent() { //Business account
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,16 +20,19 @@ export default function BusinessSignUpComponent() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password); //Sends data to firebase
       const user = userCredential.user; //retrieves user object returned from firebase
 
-      const docRef = doc(db, "users", user.uid) //create a document reference for adding user in users collection
+      const docRef = doc(db, "users", user.uid); //create a document reference for adding user in users collection
       
-      const permissionDocRef = doc(db, "permissions", "2")
+      const permDocRef = doc(db, "permissions", user.uid);
 
       await setDoc(docRef, {
         firstName: fname.valueOf(),
         lastName: lname.valueOf(),
         email: email.valueOf(),
-        permissionLevel: permissionDocRef,
       })
+
+      await setDoc(permDocRef, {
+        type: "business"
+      });
 
       /* Storing neccessary values into localStorage to identify who the user is */ 
       localStorage.setItem('token', user.accessToken);
