@@ -1,28 +1,53 @@
 import { useState } from 'react';
-import { auth } from '../firebaseConfig'
+import { auth, db } from '../firebaseConfig'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { doc, setDoc } from "firebase/firestore"; 
 
 export default function SignUpComponent() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fname, setFname] = useState('');
+  const [lname, setLname] = useState('');
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {  
     e.preventDefault();
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(userCredential)
-      const user = userCredential.user;
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password); //Sends data to firebase
+      const user = userCredential.user; //retrieves user object returned from firebase
+
+      const docRef = doc(db, "users", user.uid) //create a document reference for adding user in users collection
+
+      const permissionDocRef = doc(db, "permissions", "1");
+
+      await setDoc(docRef, {
+        firstName: fname.valueOf(),
+        lastName: lname.valueOf(),
+        email: email.valueOf(),
+        permissionLevel: permissionDocRef,
+      })
+
+      /* Storing neccessary values into localStorage to identify who the user is */ 
       localStorage.setItem('token', user.accessToken);
       localStorage.setItem('user', JSON.stringify(user))
-      navigate("/business-dashboard")
+      navigate("/dashboard") //Taking them into the dashboard
     } catch (error) {
       console.error(error)
     }
+  }
+
+  /* Functions for handling all changes to form values */
+
+  const handleLnameChange = (e) => {
+    setLname(e.target.value) 
+  }
+
+  const handleFnameChange = (e) => {
+    setFname(e.target.value) 
   }
 
   const handleEmailChange = (e) => {
@@ -51,7 +76,7 @@ export default function SignUpComponent() {
             alt="Your Company"
           />
           <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Create an account
+            Create a Standard account
           </h2>
         </div>
 
@@ -68,6 +93,8 @@ export default function SignUpComponent() {
                     name="firstName"
                     autoComplete="firstName"
                     required
+                    value={fname}
+                    onChange={handleFnameChange}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -82,6 +109,8 @@ export default function SignUpComponent() {
                     name="lastName"
                     autoComplete="lastName"
                     required
+                    value={lname}
+                    onChange={handleLnameChange}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -132,7 +161,7 @@ export default function SignUpComponent() {
                 </div>
 
                 <div className="text-sm leading-6">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                  <a href="/" className="font-semibold text-indigo-600 hover:text-indigo-500">
                     Forgot password?
                   </a>
                 </div>
@@ -148,7 +177,7 @@ export default function SignUpComponent() {
               </div>
             </form>
 
-            <div>
+            {/* <div>
               <div className="relative mt-10">
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                   <div className="w-full border-t border-gray-200" />
@@ -183,7 +212,7 @@ export default function SignUpComponent() {
                   <span className="text-sm font-semibold leading-6">GitHub</span>
                 </a>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <p className="mt-10 text-center text-sm text-gray-500">

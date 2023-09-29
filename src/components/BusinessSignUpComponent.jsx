@@ -1,59 +1,53 @@
 import { useState } from 'react';
 import { auth, db } from '../firebaseConfig'
-import { signInWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword } from 'firebase/auth'
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { doc, getDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore"; 
 
-export default function SignInComponent() {
-
-  // const permConverter = {
-  //   toFirestore: (user) => {
-  //     return {
-  //       permission: user.permissionLevel
-  //     };
-  //   },
-  //   fromFirestore: (snapshot, options) => {
-  //     const data = snapshot.data(options);
-  //     return toString(data.permissionLevel);
-  //   }
-  // }
+export default function BusinessSignUpComponent() {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [fname, setFname] = useState('');
+  const [lname, setLname] = useState('');
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {  
     e.preventDefault();
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password); //Sends data to firebase
+      const user = userCredential.user; //retrieves user object returned from firebase
 
-      const docRef = doc(db, "users", user.uid)
+      const docRef = doc(db, "users", user.uid) //create a document reference for adding user in users collection
+      
+      const permissionDocRef = doc(db, "permissions", "2")
 
-      const docSnap = await getDoc(docRef)
+      await setDoc(docRef, {
+        firstName: fname.valueOf(),
+        lastName: lname.valueOf(),
+        email: email.valueOf(),
+        permissionLevel: permissionDocRef,
+      })
 
-      if (docSnap.exists()) {
-        localStorage.setItem('token', user.accessToken);
-        localStorage.setItem('user', JSON.stringify(user));
-
-        const permissionLevel = docSnap.get("permissionLevel")
-        console.log(docSnap)
-
-        if (permissionLevel === 1) {
-          navigate("/dashboard")
-        } else if (permissionLevel === 2) {
-          navigate("/business-dashboard")
-        }
-        
-      } else {
-        console.log("No document found for user " + user.uid);
-      }
-
+      /* Storing neccessary values into localStorage to identify who the user is */ 
+      localStorage.setItem('token', user.accessToken);
+      localStorage.setItem('user', JSON.stringify(user))
+      navigate("/business-dashboard") //Taking them into the dashboard
     } catch (error) {
       console.error(error)
     }
+  }
+
+  /* Functions for handling all changes to form values */
+
+  const handleLnameChange = (e) => {
+    setLname(e.target.value) 
+  }
+
+  const handleFnameChange = (e) => {
+    setFname(e.target.value) 
   }
 
   const handleEmailChange = (e) => {
@@ -82,13 +76,45 @@ export default function SignInComponent() {
             alt="Your Company"
           />
           <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Sign in to your account
+            Create a Business account
           </h2>
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
           <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
             <form className="space-y-6" action="#" onSubmit={handleSubmit}>
+              <div>
+                <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-900">
+                  First Name
+                </label>
+                <div className="mt-2">
+                  <input
+                    id="firstName"
+                    name="firstName"
+                    autoComplete="firstName"
+                    required
+                    value={fname}
+                    onChange={handleFnameChange}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium leading-6 text-gray-900">
+                  Last Name
+                </label>
+                <div className="mt-2">
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    autoComplete="lastName"
+                    required
+                    value={lname}
+                    onChange={handleLnameChange}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
+                </div>
+              </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                   Email address
@@ -151,7 +177,7 @@ export default function SignInComponent() {
               </div>
             </form>
 
-            <div>
+            {/* <div>
               <div className="relative mt-10">
                 <div className="absolute inset-0 flex items-center" aria-hidden="true">
                   <div className="w-full border-t border-gray-200" />
@@ -163,7 +189,7 @@ export default function SignInComponent() {
 
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <a
-                  href="/"
+                  href="#"
                   className="flex w-full items-center justify-center gap-3 rounded-md bg-[#1D9BF0] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1D9BF0]"
                 >
                   <svg className="h-5 w-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
@@ -173,7 +199,7 @@ export default function SignInComponent() {
                 </a>
 
                 <a
-                  href="/"
+                  href="#"
                   className="flex w-full items-center justify-center gap-3 rounded-md bg-[#24292F] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#24292F]"
                 >
                   <svg className="h-5 w-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
@@ -186,13 +212,13 @@ export default function SignInComponent() {
                   <span className="text-sm font-semibold leading-6">GitHub</span>
                 </a>
               </div>
-            </div>
+            </div> */}
           </div>
 
           <p className="mt-10 text-center text-sm text-gray-500">
-            Dont have an account?{' '}
-            <a href="/sign-up" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
-              Sign up for one today
+            Already have an account?{' '}
+            <a href="/sign-in" className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+              Sign in instead
             </a>
           </p>
         </div>
