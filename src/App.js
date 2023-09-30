@@ -6,6 +6,8 @@ import UserDashboardPage from './pages/UserDashboardPage';
 import BusinessDashboardPage from './pages/BusinessDashboardPage';
 import Protected from './components/Protected';
 import BusinessSignUpPage from './pages/BusinessSignUpPage';
+import ApplicationEditor from './components/ApplicationEditor';
+import ApplicationTemplateSelection from './components/ApplicationTemplateSelection';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route path="/business-dashboard" element={<Protected />}> {/* Protected route, checks if token exists before entering*/}
           <Route path="/business-dashboard" index element={<BusinessDashboardPage />} />
         </Route >
+        <Route path="/create-form/:templateId" element={<ApplicationEditor />} />
+        <Route path="/template-selection" element={<ApplicationTemplateSelection />} />
       </Routes>
     </Router>
   );

@@ -1,3 +1,5 @@
+import { useEffect } from "react" //try to use a useEffect to load in the values on component render
+
 const statuses = { Completed: 'text-green-400 bg-green-400/10', Error: 'text-rose-400 bg-rose-400/10' }
 const activityItems = [
   {
@@ -26,7 +28,12 @@ function UserPendingApplicationsComponent() {
     <>
       {/* Activity list */}
       <div className="border-t border-white/10 pt-11">
-        <h2 className="px-4 text-base font-semibold leading-7 text-gray-900 sm:px-6 lg:px-8">Current Applications</h2>
+        <div className="px-4 text-base font-semibold leading-7 text-gray-900 sm:px-6 lg:px-8 flex">
+          <h2>Current Applications</h2>
+          <ul>
+            <a className="bg-purple-300 rounded mx-5 px-3" href="/template-selection">Add new</a>
+          </ul>
+        </div>
         <table className="mt-6 w-full whitespace-nowrap text-left">
           <colgroup>
             <col className="w-full sm:w-4/12" />
