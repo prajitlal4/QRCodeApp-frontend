@@ -10,6 +10,7 @@ function ApplicationTemplateSelection() {
     const templateSnapshot = await getDocs(templatesCollection);
     const templatesList = templateSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     setTemplates(templatesList);
+    console.log(templatesList)
   };
 
   useEffect(() => {
