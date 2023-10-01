@@ -28,7 +28,7 @@ function UserPendingApplicationsComponent() {
     <>
       {/* Activity list */}
       <div className="border-t border-white/10 pt-11">
-        <div className="px-4 text-base font-semibold leading-7 text-gray-900 sm:px-6 lg:px-8 flex">
+        <div className="text-base font-semibold leading-7 text-gray-900 flex">
           <h2>Current Applications</h2>
           <ul>
             <a className="bg-purple-300 rounded mx-5 px-3" href="/template-selection">Add new</a>
