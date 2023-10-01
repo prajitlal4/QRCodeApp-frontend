@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebaseConfig';
 import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
+import { getAuth } from "firebase/auth";
 
 function ApplicationEditor() { //allows user to edit application, only title and description for now
   const { templateId } = useParams();
@@ -34,12 +35,29 @@ function ApplicationEditor() { //allows user to edit application, only title and
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formInstanceRef = await addDoc(collection(db, 'formInstances'), {
-      title,
-      description,
-      templateId,
-    });
-    alert(`Form created! Link: /form/${formInstanceRef.id}`);
+
+    const auth = getAuth();
+    const user = auth.currentUser; //gets current user details for storing alongside form instance
+
+    // Check if the user is not logged in
+    if (!user) {
+      console.error('User not authenticated');
+      return;
+    }
+
+    try {
+      const formInstanceRef = await addDoc(collection(db, 'formInstances'), {
+        title,
+        description,
+        salary,
+        templateId,
+        submissionCount: 0,
+        userId: user.uid,
+      });
+      alert(`Form created! Link: /form/${formInstanceRef.id}`);
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
   if (!template) return <p>Loading...</p>;
@@ -131,7 +149,7 @@ function ApplicationEditor() { //allows user to edit application, only title and
           </div>
         </div>
         {/* Submit Button */}
-        <button type="submit" onClick={handleSubmit}>Create Form</button>
+        <button className="bg-purple-300 p-1 rounded font-bold"type="submit" onClick={handleSubmit}>Create Form</button>
       </div>
     </form>
     </div>
