@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebaseConfig';
 import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
-import { getAuth } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function FormView() { //allows user to edit application, only title and description for now
   const { instanceId } = useParams();
-  
-  console.log(instanceId)
 
   const [instance, setInstance] = useState(null);
+  const [user, setUser] = useState(null);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -18,30 +17,41 @@ function FormView() { //allows user to edit application, only title and descript
   const [submissionCount, setSubmissionCount] = useState(0); //setting states, maybe better to manage?
   const [fields, setFields] = useState([]);
 
+  useEffect(() => { //checks to see if user is logged on before trying to load component, to stop null value from rendering
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    // Clean up subscription on component unmount
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
-    const fetchInstance = async () => {
-      try {
-        const instanceDoc = doc(db, 'formInstances', instanceId);
-        const instanceSnapshot = await getDoc(instanceDoc);
+    console.log(user)
+    if (user) {
+      const fetchInstance = async () => {
+        try {
+          const instanceDoc = doc(db, 'formInstances', instanceId);
+          const instanceSnapshot = await getDoc(instanceDoc);
 
-        if (instanceSnapshot.exists()) {
-          const instanceData = instanceSnapshot.data();
-          setInstance(instanceData);
-          setSubmissionCount(instanceData.submissionCount);
-          setFields(instanceData.fields)
-          setTitle(instanceData.title); // Set initial title and description values
-          setDescription(instanceData.description);
-          setSalary(instanceData.salary)
+          if (instanceSnapshot.exists()) {
+            const instanceData = instanceSnapshot.data();
+            setInstance(instanceData);
+            setSubmissionCount(instanceData.submissionCount);
+            setFields(instanceData.fields)
+            setTitle(instanceData.title); // Set initial title and description values
+            setDescription(instanceData.description);
+            setSalary(instanceData.salary)
 
-          console.log(instanceData)
+            console.log(instanceData)
+          }
+        } catch (e) {
+          console.error('Error fetching instance:', e);
         }
-      } catch (e) {
-        console.error('Error fetching instance:', e);
-      }
-    };
-
+      };
     fetchInstance();
-  }, [instanceId]);
+    }
+  }, [instanceId, user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

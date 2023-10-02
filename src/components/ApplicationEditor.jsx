@@ -7,8 +7,6 @@ import { getAuth } from "firebase/auth";
 function ApplicationEditor() { //allows user to edit application, only title and description for now
   const { templateId } = useParams();
 
-  console.log(templateId)
-
   const [template, setTemplate] = useState(null);
 
   const [title, setTitle] = useState('');
