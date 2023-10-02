@@ -8,6 +8,7 @@ import Protected from './components/Protected';
 import BusinessSignUpPage from './pages/BusinessSignUpPage';
 import BusinessTemplateSelectorPage from './pages/BusinessTemplateSelectorPage';
 import BusinessFormBuilderPage from './pages/BusinessFormBuilderPage';
+import FormViewPage from './pages/FormViewPage';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         </Route >
         <Route path="/create-form/:templateId" element={<BusinessFormBuilderPage />} />
         <Route path="/template-selection" element={<BusinessTemplateSelectorPage />} />
+        <Route path="/form/:instanceId" element={<FormViewPage />} />
       </Routes>
     </Router>
   );
