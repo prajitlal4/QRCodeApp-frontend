@@ -40,70 +40,56 @@ function BusinessCurrentApplicationsComponent() {
             <a className="bg-purple-300 rounded mx-5 px-3" href="/template-selection">Add new</a>
           </ul>
         </div>
-        <table className="mt-6 w-full whitespace-nowrap text-left">
-          <colgroup>
-            <col className="w-full sm:w-4/12" />
-            <col className="lg:w-4/12" />
-            <col className="lg:w-2/12" />
-            <col className="lg:w-1/12" />
-            <col className="lg:w-1/12" />
-          </colgroup>
-          <thead className="border-b border-white/10 text-sm leading-6 text-gray-900">
+        <div className="-mx-4 mt-8 sm:-mx-0">
+        <table className="min-w-full divide-y divide-gray-300">
+          <thead>
             <tr>
-              <th scope="col" className="py-2 pl-4 pr-8 font-semibold sm:pl-6 lg:pl-8">
+              <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                 Job Title
-              </th>
-              <th scope="col" className="hidden py-2 pl-0 pr-8 font-semibold sm:table-cell">
-                Applicants
-              </th>
-              <th scope="col" className="py-2 pl-0 pr-4 text-right font-semibold sm:pr-8 sm:text-left lg:pr-20">
-                Status
-              </th>
-              <th scope="col" className="hidden py-2 pl-0 pr-8 font-semibold md:table-cell lg:pr-20">
-                Last Activity
               </th>
               <th
                 scope="col"
-                className="hidden py-2 pl-0 pr-4 text-right font-semibold sm:table-cell sm:pr-6 lg:pr-8"
+                className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
               >
-                
+                Applicants
+              </th>
+              <th
+                scope="col"
+                className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
+              >
+                Salary
+              </th>
+              <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                Status
+              </th>
+              <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                <span className="sr-only">Edit</span>
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/5">
+          <tbody className="divide-y divide-gray-200 bg-white">
             {formInstances.map((instance) => (
               <tr key={instance.id}>
-                <td className="py-4 pl-4 pr-8 sm:pl-6 lg:pl-8">
-                  <div className="flex items-center gap-x-4">
-                    <div className="truncate text-sm font-medium leading-6 text-gray-900">{instance.title}</div>
-                  </div>
+                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                  {instance.title}
                 </td>
-                <td className="hidden py-4 pl-0 pr-4 sm:table-cell sm:pr-8">
-                  <div className="flex gap-x-3">
-                    <div className="truncate text-sm font-medium leading-6 text-gray-900">{instance.salary}</div>
-                    <span className="inline-flex items-center rounded-md bg-gray-400/10 px-2 py-1 text-xs font-medium text-gray-400 ring-1 ring-inset ring-gray-400/20">
-                      WIP
-                    </span>
-                  </div>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:table-cell">
+                  {instance.submissionCount}
                 </td>
-                <td className="py-4 pl-0 pr-4 text-sm leading-6 sm:pr-8 lg:pr-20">
-                  <div className="flex items-center justify-end gap-x-2 sm:justify-start">
-                    <time className="text-gray-400 sm:hidden">
-                      WIP
-                    </time>
-                    <div className="hidden text-gray-900 sm:block">WIP</div>
-                  </div>
+                <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
+                  {instance.salary}
                 </td>
-                <td className="hidden py-4 pl-0 pr-8 text-sm leading-6 text-gray-400 md:table-cell lg:pr-20">
-                WIP
-                </td>
-                <td className="hidden py-4 pl-0 pr-4 text-right text-sm leading-6 text-gray-400 sm:table-cell sm:pr-6 lg:pr-8">
-                  <time>WIP</time>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{instance.status}</td>
+                <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                  <a href="#" className="text-indigo-600 hover:text-indigo-900">
+                    Edit
+                  </a>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     </>
 )}

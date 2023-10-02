@@ -12,6 +12,7 @@ function ApplicationEditor() { //allows user to edit application, only title and
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [salary, setSalary] = useState(0);
+  const [status, setStatus] = useState('Open'); //setting states, maybe better to manage?
 
   useEffect(() => {
     const fetchTemplate = async () => {
@@ -52,7 +53,8 @@ function ApplicationEditor() { //allows user to edit application, only title and
         salary,
         templateId,
         submissionCount: 0,
-        userId: user.uid,
+        status: status,
+        userId: user.uid
       });
       alert(`Form created! Link: /form/${formInstanceRef.id}`);
     } catch (error) {
