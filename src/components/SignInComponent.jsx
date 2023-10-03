@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { auth, db } from '../firebaseConfig'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { doc, getDoc } from "firebase/firestore";
 
 export default function SignInComponent() {
@@ -11,6 +11,7 @@ export default function SignInComponent() {
   const [password, setPassword] = useState('');
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSubmit = async (e) => {  
     e.preventDefault();
@@ -32,9 +33,11 @@ export default function SignInComponent() {
         console.log(docSnap)
 
         if (permissionLevel === "candidate") {
-          navigate("/dashboard")
+          const from = location.state?.from || '/dashboard';
+          navigate(from)
         } else if (permissionLevel === "business") {
-          navigate("/business-dashboard")
+          const from = location.state?.from || '/business-dashboard';
+          navigate(from)
         }
         
       } else {

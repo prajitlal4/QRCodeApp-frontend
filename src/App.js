@@ -9,11 +9,13 @@ import BusinessSignUpPage from './pages/BusinessSignUpPage';
 import BusinessTemplateSelectorPage from './pages/BusinessTemplateSelectorPage';
 import BusinessFormBuilderPage from './pages/BusinessFormBuilderPage';
 import FormViewPage from './pages/FormViewPage';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/form/:instanceId" element={<ProtectedRoute element={<FormViewPage />} />} />
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="/sign-up-business" element={<BusinessSignUpPage />} />
         <Route path="/sign-in" element={<SignInPage />} />
@@ -25,7 +27,6 @@ function App() {
         </Route >
         <Route path="/create-form/:templateId" element={<BusinessFormBuilderPage />} />
         <Route path="/template-selection" element={<BusinessTemplateSelectorPage />} />
-        <Route path="/form/:instanceId" element={<FormViewPage />} />
       </Routes>
     </Router>
   );

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebaseConfig';
-import { doc, getDoc, collection, addDoc, updateDoc, Firestore } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, updateDoc } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 function FormView() { //allows user to edit application, only title and description for now
   const { instanceId } = useParams(); //takes the form instance from the params
 
-  /* Sets the form instance, user object and permission string here */
+  /* Sets the form instance, user object here */
   const [instance, setInstance] = useState(null);
   const [user, setUser] = useState(null);
-  const [userPermission, setUserPermission] = useState('');
 
   /* Gets all information about the application */
   const [fieldValues, setFieldValues] = useState({});
@@ -25,24 +24,6 @@ function FormView() { //allows user to edit application, only title and descript
     // Clean up subscription on component unmount
     return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    if (user) {
-      const fetchUserPermission = async () => {
-        try {
-          const permissionDoc = doc(db, 'permissions', user.uid);
-          const permissionSnapshot = await getDoc(permissionDoc);
-  
-          if (permissionSnapshot.exists()) {
-            setUserPermission(permissionSnapshot.data().type);
-          }
-        } catch (e) {
-          console.error('Error fetching user permission:', e);
-        }
-      };
-      fetchUserPermission();
-    }
-  }, [user, db]);
 
   useEffect(() => {
     if (user) {
@@ -103,7 +84,7 @@ function FormView() { //allows user to edit application, only title and descript
     setFieldValues(fieldValues);
   };
 
-  if (!instance || userPermission !== "candidate") return <p>Loading...</p>;
+  if (!instance) return <p>Loading...</p>;
 
   return (
     <div className="py-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
