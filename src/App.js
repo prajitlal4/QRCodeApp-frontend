@@ -10,6 +10,7 @@ import BusinessTemplateSelectorPage from './pages/BusinessTemplateSelectorPage';
 import BusinessFormBuilderPage from './pages/BusinessFormBuilderPage';
 import FormViewPage from './pages/FormViewPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import ApplicationSubmissionsPage from './pages/ApplicationSubmissionsPage';
 
 function App() {
   return (
@@ -24,6 +25,9 @@ function App() {
         </Route>
         <Route path="/business-dashboard" element={<Protected />}> {/* Protected route, checks if token exists before entering*/}
           <Route path="/business-dashboard" index element={<BusinessDashboardPage />} />
+        </Route >
+        <Route path="/submissions/:instanceId" element={<Protected />}> {/* Protected route, checks if token exists before entering*/}
+          <Route path="/submissions/:instanceId" index element={<ApplicationSubmissionsPage />} />
         </Route >
         <Route path="/create-form/:templateId" element={<BusinessFormBuilderPage />} />
         <Route path="/template-selection" element={<BusinessTemplateSelectorPage />} />
