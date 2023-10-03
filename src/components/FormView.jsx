@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { db } from '../firebaseConfig';
-import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, addDoc, updateDoc, Firestore } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -13,7 +13,6 @@ function FormView() { //allows user to edit application, only title and descript
   const [userPermission, setUserPermission] = useState('');
 
   /* Gets all information about the application */
-  const [submissionCount, setSubmissionCount] = useState(0); //setting states, maybe better to manage?
   const [fieldValues, setFieldValues] = useState({});
 
   /* useEffect Hooks */
@@ -46,7 +45,6 @@ function FormView() { //allows user to edit application, only title and descript
   }, [user, db]);
 
   useEffect(() => {
-    console.log(user)
     if (user) {
       const fetchInstance = async () => {
         try {
@@ -56,8 +54,7 @@ function FormView() { //allows user to edit application, only title and descript
           if (instanceSnapshot.exists()) {
             const instanceData = instanceSnapshot.data();
             setInstance(instanceData);
-            setFieldValues(instanceData.fields)
-            console.log(instanceData)
+            setFieldValues(instanceData.fields)     
           }
         } catch (e) {
           console.error('Error fetching instance:', e);
@@ -80,15 +77,19 @@ function FormView() { //allows user to edit application, only title and descript
       console.error('User not authenticated');
       return;
     }
-    console.log(fieldValues);
 
     try {
-      const formSubmission = await addDoc(collection(db, 'formSubmissions'), {
+      await addDoc(collection(db, 'formSubmissions'), {
         instanceId,
-        submissionCount: submissionCount + 1,
         fields: fieldValues,
         userId: user.uid
       });
+
+      const instanceDoc = doc(db, 'formInstances', instanceId);
+      await updateDoc(instanceDoc, {
+        submissionCount: instance.submissionCount + 1
+      });
+
       alert(`Form submitted!`);
     } catch (error) {
       console.error("Error adding document: ", error);
@@ -100,7 +101,6 @@ function FormView() { //allows user to edit application, only title and descript
     inputField.value = value;
     fieldValues[index] = inputField;
     setFieldValues(fieldValues);
-    console.log(fieldValues);
   };
 
   if (!instance || userPermission !== "candidate") return <p>Loading...</p>;
