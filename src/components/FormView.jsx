@@ -60,17 +60,21 @@ function FormView() { //allows user to edit application, only title and descript
     }
 
     try {
-      await addDoc(collection(db, 'formSubmissions'), {
-        instanceId,
+      // Reference to the 'submissions' subcollection of the specific instance
+      const submissionsSubcollection = collection(db, 'formInstances', instanceId, 'submissions');
+    
+      // Add the submission to the subcollection
+      await addDoc(submissionsSubcollection, {
         fields: fieldValues,
         userId: user.uid
       });
-
+    
+      // Update the parent 'formInstance' document's submissionCount
       const instanceDoc = doc(db, 'formInstances', instanceId);
       await updateDoc(instanceDoc, {
         submissionCount: instance.submissionCount + 1
       });
-
+    
       alert(`Form submitted!`);
     } catch (error) {
       console.error("Error adding document: ", error);
