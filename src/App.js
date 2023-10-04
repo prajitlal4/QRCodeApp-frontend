@@ -27,7 +27,7 @@ function App() {
           <Route path="/business-dashboard" index element={<BusinessDashboardPage />} />
         </Route >
         <Route path="/submissions/:instanceId" element={<Protected />}> {/* Protected route, checks if token exists before entering*/}
-          <Route path="/submissions/:instanceId" index element={<ApplicationSubmissionsPage />} />
+          <Route path="/submissions/:instanceId" element={<ApplicationSubmissionsPage />} />
         </Route >
         <Route path="/create-form/:templateId" element={<BusinessFormBuilderPage />} />
         <Route path="/template-selection" element={<BusinessTemplateSelectorPage />} />

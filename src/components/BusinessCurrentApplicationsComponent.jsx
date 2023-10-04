@@ -75,7 +75,7 @@ function BusinessCurrentApplicationsComponent() {
                 </td>
                 <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:table-cell">
                   {instance.submissionCount}
-                  <a className="bg-purple-300 rounded mx-5 px-3" href="/submissions/:instanceId">View</a>
+                  <a className="bg-purple-300 rounded mx-5 px-3" href={`/submissions/${instance.id}`}>View</a>
                 </td>
                 <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
                   $ {instance.salary}

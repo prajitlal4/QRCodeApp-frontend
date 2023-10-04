@@ -1,11 +1,53 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { query, collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import { useParams } from 'react-router-dom';
 
-const people = [
-  { name: 'Lindsay Walton', title: 'Front-end Developer', email: 'lindsay.walton@example.com', role: 'Member' },
-  // More people...
-]
+function ApplicationSubmissionsComponent() {
 
-const ApplicationSubmissionsComponent = () => {
+  const { instanceId } = useParams();
+
+  const [user, setUser] = useState(null);
+  const [submissions, setSubmissions] = useState([]);
+
+  useEffect(() => { //checks to see if user is logged on before trying to load component, to stop null value from rendering
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    // Clean up subscription on component unmount
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => { //grabs all submissions from the database which contains the instanceId passed in through parameter
+    if (user) {
+      const fetchData = async () => {
+      const q = query(collection(db, 'formInstances', instanceId, 'submissions'));
+      const querySnapshot = await getDocs(q);
+
+      const submissionsWithUserDetails = [];
+
+      for (let document of querySnapshot.docs) {
+        const submissionData = document.data();
+        const userDoc = await getDoc(doc(db, 'users', submissionData.userId));
+        const userData = userDoc.data();
+
+        submissionsWithUserDetails.push({
+          ...submissionData,
+          userEmail: userData.email,
+          userFName: userData.firstName,
+          userLName: userData.lastName,
+          // add more fields as needed
+          });
+      }
+      setSubmissions(submissionsWithUserDetails);
+    };
+
+    fetchData();
+    }
+  }, [user]);
+
   return (
     <div className="min-h-full">
     <div className="py-10">
@@ -25,18 +67,18 @@ const ApplicationSubmissionsComponent = () => {
                     </th>
                     <th
                       scope="col"
-                      className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
-                    >
-                      Title
-                    </th>
-                    <th
-                      scope="col"
                       className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 lg:table-cell"
                     >
                       Email
                     </th>
+                    <th
+                      scope="col"
+                      className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 sm:table-cell"
+                    >
+                      Responses
+                    </th>
                     <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Role
+                      Status
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
                       <span className="sr-only">Edit</span>
@@ -44,21 +86,21 @@ const ApplicationSubmissionsComponent = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {people.map((person) => (
-                    <tr key={person.email}>
+                  {submissions.map((submission, index) => (
+                    <tr key={index}>
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                        {person.name}
+                        {submission.userFName} {submission.userLName}
                       </td>
                       <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 sm:table-cell">
-                        {person.title}
+                        {submission.userEmail}
                       </td>
                       <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
-                        {person.email}
+                        <a className="bg-purple-300 rounded px-3" href={`/submissions/${instanceId}/responses/${submission.userId}`}>View</a>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{person.role}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{submission.role}</td>
                       <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
                         <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                          Edit<span className="sr-only">, {person.name}</span>
+                          Edit<span className="sr-only">, {submission.name}</span>
                         </a>
                       </td>
                     </tr>
