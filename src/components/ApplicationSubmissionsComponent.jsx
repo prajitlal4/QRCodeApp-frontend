@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { query, collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { query, collection, getDocs, getDoc, doc, documentId } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useParams } from 'react-router-dom';
 
@@ -30,6 +30,7 @@ function ApplicationSubmissionsComponent() {
 
       for (let document of querySnapshot.docs) {
         const submissionData = document.data();
+        console.log(querySnapshot)
         const userDoc = await getDoc(doc(db, 'users', submissionData.userId));
         const userData = userDoc.data();
 
@@ -38,6 +39,7 @@ function ApplicationSubmissionsComponent() {
           userEmail: userData.email,
           userFName: userData.firstName,
           userLName: userData.lastName,
+          submissionId: document.id,
           // add more fields as needed
           });
       }
@@ -50,8 +52,7 @@ function ApplicationSubmissionsComponent() {
 
   return (
     <div className="min-h-full">
-    <div className="py-10">
-      <header>
+      <div className="py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">JOB TITLE</h1>
           <div className="border-t border-white/10 pt-11">
@@ -95,7 +96,7 @@ function ApplicationSubmissionsComponent() {
                         {submission.userEmail}
                       </td>
                       <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
-                        <a className="bg-purple-300 rounded px-3" href={`/submissions/${instanceId}/responses/${submission.userId}`}>View</a>
+                        <a className="bg-purple-300 rounded px-3" href={`/submissions/${instanceId}/responses/${submission.submissionId}?user=${submission.userId}`}>View</a>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{submission.role}</td>
                       <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
@@ -110,7 +111,6 @@ function ApplicationSubmissionsComponent() {
             </div>
           </div>
         </div>
-      </header>
     </div>
   </div>
   )
