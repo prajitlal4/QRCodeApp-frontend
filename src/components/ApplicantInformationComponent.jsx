@@ -13,9 +13,10 @@ export default function ApplicantInformationComponent() {
   const userId = searchParams.get('user')
 
   const [user, setUser] = useState(null);
-  const [submission, setSubmission] = useState(null);
+  const [submission, setSubmission] = useState([]);
 
   const [fieldValues, setFieldValues] = useState([]);
+  const [submissionUser, setSubmissionUser] = useState([]);
 
   useEffect(() => { //checks to see if user is logged on before trying to load component, to stop null value from rendering
     const auth = getAuth();
@@ -30,14 +31,21 @@ export default function ApplicantInformationComponent() {
     if (user) {
       const fetchData = async () => {
         const submissionDoc = doc(db, 'formInstances', params.instanceId, 'submissions', params.submissionId); //getting the answers + questions
+        const userDoc = doc(db, 'users', userId)
 
         const querySnapshot = await getDoc(submissionDoc);
         if (querySnapshot.exists()) {
           const submissionData = querySnapshot.data();
           setSubmission(submissionData);
           setFieldValues(submissionData.fields);
-          console.log(fieldValues)
         }
+
+        const queryUserSnapshot = await getDoc(userDoc);
+        if (queryUserSnapshot.exists()) {
+          const userData = queryUserSnapshot.data();
+          setSubmissionUser(userData);
+        }
+
       };
       fetchData();
     }
@@ -50,21 +58,17 @@ export default function ApplicantInformationComponent() {
           <h1 className="text-3xl font-bold leading-tight tracking-tight text-gray-900">JOB TITLE</h1>
           <div className="border-t border-white/10 pt-11">
             <div className="text-base font-semibold leading-7 text-gray-900 flex">
-              <h2>Submissions</h2>
+              <h2>Submission</h2>
             </div>
             <div className="mt-6 border-t border-gray-100">
               <dl className="divide-y divide-gray-100">
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                   <dt className="text-sm font-medium leading-6 text-gray-900">Full name</dt>
-                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">Margot Foster</dd>
-                </div>
-                <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
-                  <dt className="text-sm font-medium leading-6 text-gray-900">Application for</dt>
-                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">Backend Developer</dd>
+                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{submissionUser.firstName} {submissionUser.lastName}</dd>
                 </div>
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                   <dt className="text-sm font-medium leading-6 text-gray-900">Email address</dt>
-                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">margotfoster@example.com</dd>
+                  <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{submissionUser.email}</dd>
                 </div>
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                   <dt className="text-sm font-medium leading-6 text-gray-900">Salary expectation</dt>
@@ -73,11 +77,17 @@ export default function ApplicantInformationComponent() {
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                   <dt className="text-sm font-medium leading-6 text-gray-900">About</dt>
                   <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                    Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa consequat. Excepteur
-                    qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia proident. Irure nostrud
-                    pariatur mollit ad adipisicing reprehenderit deserunt qui eu.
+                    FROM USER PROFILE
                   </dd>
                 </div>
+                {fieldValues.map((field, index) => (
+                  <div key={index} className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+                    <dt className="text-sm font-medium leading-6 text-gray-900">{index+1}: {field.label}</dt>
+                    <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                      {field.value}
+                    </dd>
+                  </div>
+                ))}
                 <div className="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
                   <dt className="text-sm font-medium leading-6 text-gray-900">Attachments</dt>
                   <dd className="mt-2 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
