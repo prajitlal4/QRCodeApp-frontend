@@ -3,6 +3,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { query, collection, getDocs, getDoc, doc, documentId } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import { useParams } from 'react-router-dom';
+import ApplicantStatusDropDownComponent from './ApplicantStatusDropDownComponent';
 
 function ApplicationSubmissionsComponent() {
 
@@ -98,11 +99,10 @@ function ApplicationSubmissionsComponent() {
                       <td className="hidden whitespace-nowrap px-3 py-4 text-sm text-gray-500 lg:table-cell">
                         <a className="bg-purple-300 rounded px-3" href={`/submissions/${instanceId}/responses/${submission.submissionId}?user=${submission.userId}`}>View</a>
                       </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{submission.role}</td>
+                      <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <ApplicantStatusDropDownComponent />
+                      </td>
                       <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-                        <a href="#" className="text-indigo-600 hover:text-indigo-900">
-                          Edit<span className="sr-only">, {submission.name}</span>
-                        </a>
                       </td>
                     </tr>
                   ))}
