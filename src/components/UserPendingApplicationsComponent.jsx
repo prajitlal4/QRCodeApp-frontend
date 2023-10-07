@@ -1,3 +1,9 @@
+import React, { useEffect, useState } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { query, collection, getDocs, getDoc, doc } from 'firebase/firestore';
+import { db } from '../firebaseConfig';
+import { useParams, useSearchParams } from 'react-router-dom';
+
 const statuses = { Completed: 'text-green-400 bg-green-400/10', Error: 'text-rose-400 bg-rose-400/10' }
 const activityItems = [
   {
@@ -21,6 +27,48 @@ function classNames(...classes) {
 }
 
 function UserPendingApplicationsComponent() {
+
+  const [searchParams] = useSearchParams(); //gets the URL params after the ? mark
+  const userId = searchParams.get('user')
+
+  const [user, setUser] = useState(null);
+  const [submission, setSubmission] = useState([]);
+
+  const [fieldValues, setFieldValues] = useState([]);
+  const [submissionUser, setSubmissionUser] = useState([]);
+
+  useEffect(() => { //checks to see if user is logged on before trying to load component, to stop null value from rendering
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+    });
+    // Clean up subscription on component unmount
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      const fetchData = async () => {
+        const submissionDoc = doc(db, 'formInstances', params.instanceId, 'submissions', params.submissionId); //getting the answers + questions
+        const userDoc = doc(db, 'users', userId)
+
+        const querySnapshot = await getDoc(submissionDoc);
+        if (querySnapshot.exists()) {
+          const submissionData = querySnapshot.data();
+          setSubmission(submissionData);
+          setFieldValues(submissionData.fields);
+        }
+
+        const queryUserSnapshot = await getDoc(userDoc);
+        if (queryUserSnapshot.exists()) {
+          const userData = queryUserSnapshot.data();
+          setSubmissionUser(userData);
+        }
+
+      };
+      fetchData();
+    }
+  }, [user]);
 
   return (
     <>
